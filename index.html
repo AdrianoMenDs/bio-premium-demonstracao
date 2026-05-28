@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+  <!-- ============================================================
+       TÍTULO DA ABA — Altere para o nome da profissional
+       ============================================================ -->
+  <title>Dra. Ana Lima · Estética</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Playfair Display (elegante/editorial) + Jost (moderno/limpo) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg:      '#F8F4EF',   /* fundo principal bege quente        */
+            card:    '#FFFFFF',   /* cards brancos                       */
+            border:  '#E8E0D5',   /* bordas sutis                        */
+            gold:    '#B8976A',   /* dourado principal                   */
+            goldl:   '#D4B896',   /* dourado claro (hover)               */
+            dark:    '#2E2A25',   /* texto escuro quente                 */
+            mid:     '#7A7168',   /* texto médio                         */
+            soft:    '#B0A89E',   /* texto suave / rótulos               */
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            body:    ['Jost', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Jost', sans-serif;
+      background: #F8F4EF;
+      color: #2E2A25;
+      min-height: 100vh;
+      /* Textura grain suave no fundo */
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E"),
+        linear-gradient(160deg, #F8F4EF 0%, #F2EBE2 100%);
+    }
+
+    .font-display { font-family: 'Playfair Display', serif; }
+
+    /* ---- Wrapper mobile centrado ---- */
+    .page-wrap {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ---- Foto de perfil ---- */
+    .avatar-ring {
+      width: 96px; height: 96px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #D4B896, #B8976A);
+      padding: 3px;
+      box-shadow: 0 8px 32px rgba(184,151,106,0.28);
+    }
+    .avatar-inner {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #DDD5C8 0%, #C4B8A8 100%);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    /* ============================================================
+       FOTO — Troque o background por: background-image: url('sua-foto.jpg'); background-size: cover;
+       ============================================================ */
+    .avatar-inner svg { opacity: 0.45; }
+
+    /* ---- Badge status ---- */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 6px 14px;
+      border-radius: 100px;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .status-open   { background: #EDFAF3; border-color: #6FCF97; color: #1E7A47; }
+    .status-closed { background: #FDF2F2; border-color: #E8A0A0; color: #9B3B3B; }
+
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-open   { background: #27AE60; animation: pulse-green 2s ease-in-out infinite; }
+    .dot-closed { background: #EB5757; }
+
+    @keyframes pulse-green {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(39,174,96,0.5); }
+      50%       { box-shadow: 0 0 0 5px rgba(39,174,96,0); }
+    }
+
+    /* ---- Accordion ---- */
+    .accordion-item {
+      background: #fff;
+      border: 1px solid #E8E0D5;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: box-shadow 0.3s ease;
+    }
+    .accordion-item.open {
+      box-shadow: 0 8px 32px rgba(184,151,106,0.12);
+      border-color: #D4B896;
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-align: left;
+      gap: 12px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .accordion-icon-wrap {
+      width: 38px; height: 38px; min-width: 38px;
+      border-radius: 10px;
+      background: #F8F4EF;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      transition: background 0.3s;
+    }
+    .accordion-item.open .accordion-icon-wrap { background: #F5EDE0; }
+
+    .accordion-chevron {
+      width: 18px; height: 18px; min-width: 18px;
+      color: #B0A89E;
+      transition: transform 0.35s cubic-bezier(.4,0,.2,1), color 0.3s;
+    }
+    .accordion-item.open .accordion-chevron {
+      transform: rotate(180deg);
+      color: #B8976A;
+    }
+
+    /* Painel que expande */
+    .accordion-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.42s cubic-bezier(.4,0,.2,1), padding 0.3s ease;
+      padding: 0 18px;
+    }
+    .accordion-panel.open {
+      max-height: 260px;
+      padding: 0 18px 18px;
+    }
+
+    /* ---- Botões de ação no accordion ---- */
+    .btn-wa {
+      display: flex; align-items: center; justify-content: center; gap-x: 8px;
+      background: #B8976A;
+      color: #fff;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      padding: 11px 20px;
+      transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+      text-decoration: none;
+      font-family: 'Jost', sans-serif;
+      gap: 8px;
+    }
+    .btn-wa:hover { background: #9E7E56; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(184,151,106,0.35); }
+
+    .btn-wa-outline {
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid #B8976A;
+      color: #B8976A;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 10px 20px;
+      transition: all 0.25s;
+      text-decoration: none;
+      font-family: 'Jost', sans-serif;
+      gap: 8px;
+    }
+    .btn-wa-outline:hover { background: #B8976A; color: #fff; }
+
+    /* ---- Cards info (horários + localização) ---- */
+    .info-card {
+      background: #fff;
+      border: 1px solid #E8E0D5;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    /* ---- Botão GPS ---- */
+    .btn-gps {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      background: #F8F4EF;
+      border: 1px solid #D4B896;
+      color: #B8976A;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 9px 10px;
+      transition: all 0.25s;
+      text-decoration: none;
+      font-family: 'Jost', sans-serif;
+      margin-top: 12px;
+      width: 100%;
+      text-align: center;
+    }
+    .btn-gps:hover { background: #B8976A; color: #fff; border-color: #B8976A; }
+
+    /* ---- Social icons ---- */
+    .social-btn {
+      width: 46px; height: 46px;
+      border-radius: 14px;
+      border: 1px solid #E8E0D5;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      color: #7A7168;
+      transition: all 0.25s;
+      text-decoration: none;
+    }
+    .social-btn:hover { border-color: #B8976A; color: #B8976A; background: #FBF7F2; transform: translateY(-2px); }
+
+    /* ---- Entrada animada ---- */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-1 { animation: fadeUp 0.55s 0.05s both; }
+    .fade-2 { animation: fadeUp 0.55s 0.15s both; }
+    .fade-3 { animation: fadeUp 0.55s 0.25s both; }
+    .fade-4 { animation: fadeUp 0.55s 0.35s both; }
+    .fade-5 { animation: fadeUp 0.55s 0.45s both; }
+    .fade-6 { animation: fadeUp 0.55s 0.55s both; }
+
+    /* Divisor ornamental */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #D4B896, transparent);
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+<div class="page-wrap">
+
+  <!-- ==============================================================
+       SEÇÃO 1 — TOPO: IDENTIFICAÇÃO
+       ============================================================== -->
+  <div class="fade-1 flex flex-col items-center gap-3 pt-4 text-center">
+
+    <!-- Foto de perfil circular -->
+    <!-- ============================================================
+         FOTO — Para trocar: <img src="foto.jpg" class="w-full h-full object-cover rounded-full" />
+         dentro da .avatar-inner
+         ============================================================ -->
+    <div class="avatar-ring">
+      <div class="avatar-inner">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#8A7E72" stroke-width="1.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         NOME — Altere para o nome da profissional ou clínica
+         ============================================================ -->
+    <div>
+      <h1 class="font-display text-[22px] font-medium text-dark leading-tight">
+        Dra. Ana Lima
+      </h1>
+      <!-- ============================================================
+           MINI-BIO — 1 linha, direto ao ponto
+           Para Nutrição: "Nutrição sem neura, resultados de verdade"
+           ============================================================ -->
+      <p class="text-soft text-[13px] font-light mt-1 tracking-wide">
+        Realçando sua beleza natural com ciência ✦
+      </p>
+    </div>
+
+  </div>
+
+
+  <!-- ==============================================================
+       SEÇÃO 2 — STATUS EM TEMPO REAL
+       ============================================================== -->
+  <div class="fade-2 flex justify-center">
+    <!-- O script abaixo calcula automaticamente aberto/fechado -->
+    <!-- ============================================================
+         HORÁRIOS DE FUNCIONAMENTO — Altere os valores dentro do JS
+         no final da página (objeto SCHEDULE)
+         ============================================================ -->
+    <span id="status-badge" class="status-badge">
+      <span id="status-dot" class="status-dot"></span>
+      <span id="status-text">Verificando...</span>
+    </span>
+  </div>
+
+
+  <!-- ==============================================================
+       SEÇÃO 3 — VITRINE DE SERVIÇOS (ACCORDION)
+       ============================================================== -->
+  <div class="fade-3">
+
+    <!-- Rótulo da seção -->
+    <p class="text-[10.5px] font-semibold tracking-[0.2em] uppercase text-soft mb-3 px-1">
+      Serviços & Valores
+    </p>
+
+    <div class="flex flex-col gap-3" id="accordion-list">
+
+      <!-- ============================================================
+           SERVIÇO 1 — Estética: Limpeza de Pele
+           Para Nutrição: Consulta Inicial + Bioimpedância — R$ 250,00
+           ============================================================ -->
+      <div class="accordion-item" data-accordion>
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="accordion-icon-wrap">🌸</div>
+            <!-- Nutrição: 🥗 -->
+            <div class="min-w-0">
+              <p class="text-[14px] font-semibold text-dark truncate">Limpeza de Pele Profunda</p>
+              <!-- Nutrição: Consulta Inicial + Bioimpedância -->
+              <p class="text-[12px] text-gold font-medium mt-0.5">R$ 150,00</p>
+              <!-- Nutrição: R$ 250,00 -->
+            </div>
+          </div>
+          <svg class="accordion-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-panel" data-panel>
+          <div class="divider mb-4"></div>
+          <p class="text-[12.5px] text-mid font-light leading-relaxed mb-4">
+            Higienização profunda, extração de cravos e oleosidade com produtos dermocosméticos. Ideal para renovação e luminosidade da pele.
+            <!-- Nutrição: Avaliação completa com anamnese, bioimpedância e montagem do plano alimentar personalizado. -->
+          </p>
+          <!-- ============================================================
+               BOTÃO AGENDAR — Altere o número do WhatsApp e a mensagem
+               ============================================================ -->
+          <a href="#"
+             target="_blank" class="btn-wa w-full">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Agendar via WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           SERVIÇO 2 — Toxina Botulínica (Sob Consulta)
+           Para Nutrição: Acompanhamento Mensal — R$ 180,00
+           ============================================================ -->
+      <div class="accordion-item" data-accordion>
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="accordion-icon-wrap">💉</div>
+            <!-- Nutrição: 📊 -->
+            <div class="min-w-0">
+              <p class="text-[14px] font-semibold text-dark truncate">Toxina Botulínica</p>
+              <!-- Nutrição: Acompanhamento Mensal -->
+              <p class="text-[12px] text-mid font-medium mt-0.5 italic">Sob Consulta</p>
+              <!-- Nutrição: R$ 180,00 -->
+            </div>
+          </div>
+          <svg class="accordion-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-panel" data-panel>
+          <div class="divider mb-4"></div>
+          <p class="text-[12.5px] text-mid font-light leading-relaxed mb-4">
+            Suavização de linhas de expressão com técnica precisa para um resultado natural. O valor é definido após avaliação individual.
+            <!-- Nutrição: Retorno mensal para ajuste de cardápio, análise de evolução e suporte contínuo. -->
+          </p>
+          <!-- ============================================================
+               BOTÃO ORÇAMENTO — Altere o número e mensagem
+               ============================================================ -->
+          <a href="#"
+             target="_blank" class="btn-wa-outline w-full">
+            Solicitar Orçamento →
+          </a>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           SERVIÇO 3 — Preenchimento Labial (Sob Consulta)
+           Para Nutrição: Reeducação Alimentar — R$ 320,00 (pacote)
+           ============================================================ -->
+      <div class="accordion-item" data-accordion>
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="accordion-icon-wrap">✨</div>
+            <!-- Nutrição: 🥦 -->
+            <div class="min-w-0">
+              <p class="text-[14px] font-semibold text-dark truncate">Preenchimento Labial</p>
+              <!-- Nutrição: Reeducação Alimentar (pacote) -->
+              <p class="text-[12px] text-mid font-medium mt-0.5 italic">Sob Consulta</p>
+              <!-- Nutrição: R$ 320,00 -->
+              <!-- ============================================================
+                   BADGE LOCALIZAÇÃO — Altere o texto para o local real
+                   ============================================================ -->
+              <span class="inline-flex items-center gap-1 mt-1 bg-[#F5EDE0] border border-[#D4B896] text-[#B8976A] text-[10px] font-medium px-2 py-0.5 rounded-md whitespace-nowrap">
+                📍 Clínica Centro · Angra dos Reis
+              </span>
+            </div>
+          </div>
+          <svg class="accordion-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-panel" data-panel>
+          <div class="divider mb-4"></div>
+          <p class="text-[12.5px] text-mid font-light leading-relaxed mb-4">
+            Harmonização labial com ácido hialurônico para contorno e volume natural. Resultado imediato, avaliação gratuita antes do procedimento.
+            <!-- Nutrição: Programa completo de 3 meses com plano alimentar, acompanhamento semanal e suporte via app. -->
+          </p>
+          <!-- ============================================================
+               BOTÃO ESPECIALISTA — Altere o número e mensagem
+               ============================================================ -->
+          <a href="#"
+             target="_blank" class="btn-wa-outline w-full">
+            Falar com Especialista →
+          </a>
+        </div>
+      </div>
+
+      <!-- SERVIÇO 4 — Peeling Facial -->
+      <div class="accordion-item" data-accordion>
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="accordion-icon-wrap">💎</div>
+            <div class="min-w-0">
+              <p class="text-[14px] font-semibold text-dark truncate">Peeling Facial</p>
+              <p class="text-[12px] text-gold font-medium mt-0.5">R$ 180,00</p>
+            </div>
+          </div>
+          <svg class="accordion-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-panel" data-panel>
+          <div class="divider mb-4"></div>
+          <p class="text-[12.5px] text-mid font-light leading-relaxed mb-4">
+            Renovação celular profunda com ácidos controlados para uniformizar o tom, reduzir manchas e devolver luminosidade à pele.
+          </p>
+          <a href="#"
+             target="_blank" class="btn-wa w-full">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Agendar via WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <!-- SERVIÇO 5 — Depilação a Laser -->
+      <div class="accordion-item" data-accordion>
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="accordion-icon-wrap">⚡</div>
+            <div class="min-w-0">
+              <p class="text-[14px] font-semibold text-dark truncate">Depilação a Laser</p>
+              <p class="text-[12px] text-mid font-medium mt-0.5 italic">Sob Consulta</p>
+            </div>
+          </div>
+          <svg class="accordion-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-panel" data-panel>
+          <div class="divider mb-4"></div>
+          <p class="text-[12.5px] text-mid font-light leading-relaxed mb-4">
+            Remoção definitiva de pelos com tecnologia a laser de última geração. Valor varia conforme a área e número de sessões. Avaliação gratuita.
+          </p>
+          <a href="#"
+             target="_blank" class="btn-wa-outline w-full">
+            Solicitar Orçamento →
+          </a>
+        </div>
+      </div>
+
+      <!-- SERVIÇO 6 — Drenagem Linfática -->
+      <div class="accordion-item" data-accordion>
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="accordion-icon-wrap">🌿</div>
+            <div class="min-w-0">
+              <p class="text-[14px] font-semibold text-dark truncate">Drenagem Linfática</p>
+              <p class="text-[12px] text-gold font-medium mt-0.5">R$ 120,00</p>
+            </div>
+          </div>
+          <svg class="accordion-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-panel" data-panel>
+          <div class="divider mb-4"></div>
+          <p class="text-[12.5px] text-mid font-light leading-relaxed mb-4">
+            Técnica manual que estimula o sistema linfático, reduzindo inchaço, melhorando a circulação e proporcionando relaxamento profundo.
+          </p>
+          <a href="#"
+             target="_blank" class="btn-wa w-full">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Agendar via WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <!-- SERVIÇO 7 — Rejuvenescimento Facial -->
+      <div class="accordion-item" data-accordion>
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="accordion-icon-wrap">🤍</div>
+            <div class="min-w-0">
+              <p class="text-[14px] font-semibold text-dark truncate">Rejuvenescimento Facial</p>
+              <p class="text-[12px] text-mid font-medium mt-0.5 italic">Sob Consulta</p>
+            </div>
+          </div>
+          <svg class="accordion-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-panel" data-panel>
+          <div class="divider mb-4"></div>
+          <p class="text-[12.5px] text-mid font-light leading-relaxed mb-4">
+            Protocolo completo antiaging com radiofrequência, ultrassom e ativos bioestimuladores para pele mais firme, jovem e radiante.
+          </p>
+          <a href="#"
+             target="_blank" class="btn-wa-outline w-full">
+            Falar com Especialista →
+          </a>
+        </div>
+      </div>
+
+      <!-- SERVIÇO 8 — Microagulhamento -->
+      <div class="accordion-item" data-accordion>
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <div class="accordion-icon-wrap">🪞</div>
+            <div class="min-w-0">
+              <p class="text-[14px] font-semibold text-dark truncate">Microagulhamento</p>
+              <p class="text-[12px] text-gold font-medium mt-0.5">R$ 220,00</p>
+            </div>
+          </div>
+          <svg class="accordion-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+        <div class="accordion-panel" data-panel>
+          <div class="divider mb-4"></div>
+          <p class="text-[12.5px] text-mid font-light leading-relaxed mb-4">
+            Estímulo à produção de colágeno com microagulhas de precisão. Trata cicatrizes, poros dilatados, flacidez e rejuvenece a pele de forma natural.
+          </p>
+          <a href="#"
+             target="_blank" class="btn-wa w-full">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Agendar via WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           ADICIONAR MAIS SERVIÇOS — Copie um bloco acima e cole aqui
+           ============================================================ -->
+
+    </div>
+  </div>
+
+
+  <!-- ==============================================================
+       SEÇÃO 4 — INFORMAÇÕES PRÁTICAS (Cards lado a lado)
+       ============================================================== -->
+  <div class="fade-4 grid grid-cols-2 gap-3">
+
+    <!-- Card Horários -->
+    <div class="info-card">
+      <p class="text-[10px] font-semibold tracking-[0.18em] uppercase text-soft mb-3">Horários</p>
+      <!-- ============================================================
+           HORÁRIOS — Altere os dias e horários
+           ============================================================ -->
+      <ul class="space-y-2">
+        <li class="flex flex-col">
+          <span class="text-[11px] text-soft font-light">Seg – Sex</span>
+          <span class="text-[12.5px] text-dark font-semibold">08h às 19h</span>
+        </li>
+        <li class="flex flex-col">
+          <span class="text-[11px] text-soft font-light">Sábado</span>
+          <span class="text-[12.5px] text-dark font-semibold">08h às 13h</span>
+        </li>
+        <li class="flex flex-col">
+          <span class="text-[11px] text-soft font-light">Domingo</span>
+          <span class="text-[12.5px] text-mid font-normal">Fechado</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Card Localização -->
+    <div class="info-card flex flex-col">
+      <p class="text-[10px] font-semibold tracking-[0.18em] uppercase text-soft mb-3">Localização</p>
+      <!-- ============================================================
+           ENDEREÇO — Altere para o endereço real
+           ============================================================ -->
+      <div class="flex-1">
+        <p class="text-[12.5px] text-dark font-semibold leading-snug">Rua das Flores, 123</p>
+        <p class="text-[11.5px] text-mid font-light mt-1 leading-snug">
+          Sala 201 · Centro<br />
+          Angra dos Reis, RJ
+        </p>
+      </div>
+      <!-- ============================================================
+           BOTÃO GPS — Altere o link do Google Maps
+           ============================================================ -->
+      <a href="https://www.google.com/maps/search/Angra+dos+Reis+RJ"
+         target="_blank" class="btn-gps">
+        📍 Como Chegar
+      </a>
+    </div>
+
+  </div>
+
+
+  <!-- ==============================================================
+       SEÇÃO 5 — CONTATO DIRETO (Rodapé com ícones sociais)
+       ============================================================== -->
+  <div class="fade-5">
+    <div class="divider mb-5"></div>
+
+    <div class="flex items-center justify-center gap-3">
+
+      <!-- ============================================================
+           WHATSAPP — Altere o número
+           ============================================================ -->
+      <a href="#" class="social-btn" title="WhatsApp">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
+
+      <!-- ============================================================
+           INSTAGRAM — Altere o link para o perfil real
+           ============================================================ -->
+      <a href="#" class="social-btn" title="Instagram">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </a>
+
+      <!-- ============================================================
+           E-MAIL — Altere para o e-mail real
+           ============================================================ -->
+      <a href="mailto:contato@dra-analima.com.br" class="social-btn" title="E-mail">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+      </a>
+
+      <!-- ============================================================
+           TELEFONE — Altere o número (opcional, pode remover)
+           ============================================================ -->
+      <a href="tel:+5524999999999" class="social-btn" title="Ligar">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+        </svg>
+      </a>
+
+    </div>
+
+    <!-- Assinatura discreta -->
+    <div class="fade-6 text-center mt-6">
+      <!-- ============================================================
+           REGISTRO PROFISSIONAL — Altere o número do CREFITO/CRN
+           ============================================================ -->
+      <p class="text-[10px] text-soft tracking-widest uppercase">CREFITO · 000000</p>
+      <p class="text-[9.5px] text-soft/60 mt-1">Angra dos Reis, RJ · © 2025</p>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+
+<!-- ==============================================================
+     JAVASCRIPT
+     ============================================================== -->
+<script>
+  /* ================================================================
+     ACCORDION — abre/fecha cards de serviço
+     ================================================================ */
+  function toggleAccordion(btn) {
+    const item  = btn.closest('[data-accordion]');
+    const panel = item.querySelector('[data-panel]');
+    const isOpen = item.classList.contains('open');
+
+    // Fecha todos os outros
+    document.querySelectorAll('[data-accordion]').forEach(el => {
+      el.classList.remove('open');
+      el.querySelector('[data-panel]').classList.remove('open');
+    });
+
+    // Abre o clicado (se estava fechado)
+    if (!isOpen) {
+      item.classList.add('open');
+      panel.classList.add('open');
+    }
+  }
+
+  /* ================================================================
+     STATUS EM TEMPO REAL — calcula aberto/fechado automaticamente
+     ================================================================
+
+     COMO PERSONALIZAR:
+     - Altere os horários de cada dia (formato 24h: [abertura, fechamento])
+     - Use null para dias sem atendimento (ex: domingo)
+     - Os dias: 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sáb
+
+     ================================================================ */
+  const SCHEDULE = {
+    0: null,               /* Domingo: fechado        */
+    1: [8, 19],            /* Segunda: 08h às 19h     */
+    2: [8, 19],            /* Terça:   08h às 19h     */
+    3: [8, 19],            /* Quarta:  08h às 19h     */
+    4: [8, 19],            /* Quinta:  08h às 19h     */
+    5: [8, 19],            /* Sexta:   08h às 19h     */
+    6: [8, 13],            /* Sábado:  08h às 13h     */
+  };
+
+  const DAY_NAMES = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+  function updateStatus() {
+    const now    = new Date();
+    const day    = now.getDay();
+    const hour   = now.getHours() + now.getMinutes() / 60;
+    const hours  = SCHEDULE[day];
+    const badge  = document.getElementById('status-badge');
+    const dot    = document.getElementById('status-dot');
+    const text   = document.getElementById('status-text');
+
+    if (hours && hour >= hours[0] && hour < hours[1]) {
+      badge.className = 'status-badge status-open';
+      dot.className   = 'status-dot dot-open';
+      text.textContent = `Aberto hoje até às ${hours[1]}h`;
+    } else {
+      badge.className = 'status-badge status-closed';
+      dot.className   = 'status-dot dot-closed';
+
+      // Descobre próximo dia de atendimento
+      let nextDay = null, daysAhead = 0;
+      for (let i = 1; i <= 7; i++) {
+        const d = (day + i) % 7;
+        if (SCHEDULE[d]) { nextDay = d; daysAhead = i; break; }
+      }
+
+      if (daysAhead === 1) {
+        text.textContent = `Fechado · Abre amanhã às ${SCHEDULE[nextDay][0]}h`;
+      } else if (nextDay !== null) {
+        text.textContent = `Fechado · Abre ${DAY_NAMES[nextDay]} às ${SCHEDULE[nextDay][0]}h`;
+      } else {
+        text.textContent = 'Fechado no momento';
+      }
+    }
+  }
+
+  updateStatus();
+  setInterval(updateStatus, 60000); /* Atualiza a cada minuto */
+</script>
+
+</body>
+</html>
