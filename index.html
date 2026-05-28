@@ -161,33 +161,16 @@
       color: #B8976A;
     }
 
-    /* Painel que expande — GPU-accelerated para Android */
+    /* Painel — altura controlada 100% por JS via RAF */
     .accordion-panel {
       overflow: hidden;
-      max-height: 0;
+      height: 0;
       padding: 0 18px;
-      will-change: max-height;
       -webkit-transform: translateZ(0);
       transform: translateZ(0);
     }
     .accordion-panel-inner {
-      opacity: 0;
-      -webkit-transform: translateY(-6px);
-      transform: translateY(-6px);
-      transition: opacity 0.22s ease, transform 0.22s ease;
-      -webkit-transition: opacity 0.22s ease, -webkit-transform 0.22s ease;
-      will-change: opacity, transform;
-    }
-    .accordion-panel.open {
       padding-bottom: 20px;
-    }
-    .accordion-panel-inner {
-      padding-bottom: 4px;
-    }
-    .accordion-panel.open .accordion-panel-inner {
-      opacity: 1;
-      -webkit-transform: translateY(0);
-      transform: translateY(0);
     }
 
     /* ---- Botões de ação no accordion ---- */
@@ -745,42 +728,63 @@
   /* ================================================================
      ACCORDION — abre/fecha cards de serviço
      ================================================================ */
+  function animateHeight(el, from, to, duration) {
+    if (el._raf) { cancelAnimationFrame(el._raf); el._raf = null; }
+    const start = performance.now();
+    function step(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const e = 1 - Math.pow(1 - p, 2); // ease-out quad
+      el.style.height = (from + (to - from) * e).toFixed(1) + 'px';
+      if (p < 1) {
+        el._raf = requestAnimationFrame(step);
+      } else {
+        el._raf = null;
+        el.style.height = to + 'px';
+      }
+    }
+    el._raf = requestAnimationFrame(step);
+  }
+
+  // Mede a altura real do painel sem afetar o layout visível
+  function measureHeight(panel) {
+    const inner = panel.querySelector('.accordion-panel-inner');
+    inner.style.position = 'absolute';
+    inner.style.visibility = 'hidden';
+    inner.style.height = 'auto';
+    const h = inner.offsetHeight;
+    inner.style.position = '';
+    inner.style.visibility = '';
+    inner.style.height = '';
+    return h;
+  }
+
   function toggleAccordion(btn) {
-    const item  = btn.closest('[data-accordion]');
-    const panel = item.querySelector('[data-panel]');
+    const item   = btn.closest('[data-accordion]');
+    const panel  = item.querySelector('[data-panel]');
     const isOpen = item.classList.contains('open');
 
-    // Fecha todos os outros imediatamente (sem transição)
+    // Fecha todos os outros instantaneamente
     document.querySelectorAll('[data-accordion]').forEach(el => {
       if (el !== item) {
         el.classList.remove('open');
         const p = el.querySelector('[data-panel]');
         p.classList.remove('open');
-        p.style.transition = 'none';
-        p.style.maxHeight = '0';
+        if (p._raf) { cancelAnimationFrame(p._raf); p._raf = null; }
+        p.style.height = '0';
       }
     });
 
     if (!isOpen) {
-      // Abre: mede altura real, depois anima
-      panel.style.transition = 'none';
-      panel.style.maxHeight = 'none';
-      const h = panel.scrollHeight + 32; // buffer para padding/botão
-      panel.style.maxHeight = '0';
-      panel.getBoundingClientRect(); // força reflow
-      panel.style.transition = 'max-height 0.3s ease';
-      panel.style.maxHeight = h + 'px';
+      const target = measureHeight(panel);
+      const from   = parseFloat(panel.style.height) || 0;
       item.classList.add('open');
       panel.classList.add('open');
+      animateHeight(panel, from, target, 300);
     } else {
-      // Fecha: fixa altura atual, depois anima para 0
-      panel.style.transition = 'none';
-      panel.style.maxHeight = panel.scrollHeight + 'px';
-      panel.getBoundingClientRect(); // força reflow
-      panel.style.transition = 'max-height 0.25s ease';
-      panel.style.maxHeight = '0';
+      const from = parseFloat(panel.style.height) || panel.offsetHeight;
       item.classList.remove('open');
       panel.classList.remove('open');
+      animateHeight(panel, from, 0, 260);
     }
   }
 
