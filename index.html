@@ -161,19 +161,33 @@
       color: #B8976A;
     }
 
-    /* Painel que expande */
+    /* Painel que expande — GPU-accelerated para Android */
     .accordion-panel {
-      display: grid;
-      grid-template-rows: 0fr;
-      transition: grid-template-rows 0.28s ease;
+      overflow: hidden;
+      max-height: 0;
       padding: 0 18px;
+      will-change: max-height;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     .accordion-panel-inner {
-      overflow: hidden;
+      opacity: 0;
+      -webkit-transform: translateY(-6px);
+      transform: translateY(-6px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      -webkit-transition: opacity 0.22s ease, -webkit-transform 0.22s ease;
+      will-change: opacity, transform;
     }
     .accordion-panel.open {
-      grid-template-rows: 1fr;
-      padding-bottom: 18px;
+      padding-bottom: 20px;
+    }
+    .accordion-panel-inner {
+      padding-bottom: 4px;
+    }
+    .accordion-panel.open .accordion-panel-inner {
+      opacity: 1;
+      -webkit-transform: translateY(0);
+      transform: translateY(0);
     }
 
     /* ---- Botões de ação no accordion ---- */
@@ -736,16 +750,37 @@
     const panel = item.querySelector('[data-panel]');
     const isOpen = item.classList.contains('open');
 
-    // Fecha todos os outros
+    // Fecha todos os outros imediatamente (sem transição)
     document.querySelectorAll('[data-accordion]').forEach(el => {
-      el.classList.remove('open');
-      el.querySelector('[data-panel]').classList.remove('open');
+      if (el !== item) {
+        el.classList.remove('open');
+        const p = el.querySelector('[data-panel]');
+        p.classList.remove('open');
+        p.style.transition = 'none';
+        p.style.maxHeight = '0';
+      }
     });
 
-    // Abre o clicado (se estava fechado)
     if (!isOpen) {
+      // Abre: mede altura real, depois anima
+      panel.style.transition = 'none';
+      panel.style.maxHeight = 'none';
+      const h = panel.scrollHeight + 32; // buffer para padding/botão
+      panel.style.maxHeight = '0';
+      panel.getBoundingClientRect(); // força reflow
+      panel.style.transition = 'max-height 0.3s ease';
+      panel.style.maxHeight = h + 'px';
       item.classList.add('open');
       panel.classList.add('open');
+    } else {
+      // Fecha: fixa altura atual, depois anima para 0
+      panel.style.transition = 'none';
+      panel.style.maxHeight = panel.scrollHeight + 'px';
+      panel.getBoundingClientRect(); // força reflow
+      panel.style.transition = 'max-height 0.25s ease';
+      panel.style.maxHeight = '0';
+      item.classList.remove('open');
+      panel.classList.remove('open');
     }
   }
 
